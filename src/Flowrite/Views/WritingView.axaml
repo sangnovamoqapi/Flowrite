@@ -1,0 +1,170 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Flowrite.ViewModels"
+             x:Class="Flowrite.Views.WritingView"
+             x:DataType="vm:WritingViewModel"
+             Background="#080809">
+
+  <Grid RowDefinitions="Auto,Auto,Auto,*,Auto">
+
+    <!-- ── Completion banner (subtle, stays dismissible) ── -->
+    <Border Grid.Row="0"
+            IsVisible="{Binding ShowCompletionBanner}"
+            Background="#0D1A12"
+            BorderBrush="#1A4D2E"
+            BorderThickness="0,0,0,1"
+            Padding="32,12">
+      <Grid ColumnDefinitions="Auto,*,Auto,Auto">
+        <TextBlock Grid.Column="0" Text="✓" FontSize="16"
+                   Foreground="{StaticResource Brush.Success}"
+                   VerticalAlignment="Center" Margin="0,0,12,0"/>
+        <TextBlock Grid.Column="1"
+                   FontSize="14" Foreground="#5AFFB0"
+                   VerticalAlignment="Center"
+                   Text="{Binding CompletedWordCount,
+                     StringFormat='Session complete — {0} words saved. Keep writing freely.'}"/>
+        <Button Grid.Column="2" Classes="ghost" Command="{Binding ViewEssayCommand}"
+                Content="View Essay →" FontSize="13" Padding="14,6" Margin="16,0,8,0"/>
+        <Button Grid.Column="3" Classes="ghost" Command="{Binding DismissCompletionBannerCommand}"
+                Content="✕" FontSize="13" Padding="10,6"/>
+      </Grid>
+    </Border>
+
+    <!-- ── Recovery banner ── -->
+    <Border Grid.Row="1"
+            IsVisible="{Binding ShowRecoveryBanner}"
+            Background="#1C1C2E"
+            BorderBrush="{StaticResource Brush.Accent}"
+            BorderThickness="0,0,0,1"
+            Padding="32,12">
+      <Grid ColumnDefinitions="*,Auto,Auto">
+        <TextBlock Grid.Column="0"
+                   Text="A previous session was recovered. Restore it?"
+                   FontSize="14" Foreground="{StaticResource Brush.TextSecondary}"
+                   VerticalAlignment="Center"/>
+        <Button Grid.Column="1" Classes="ghost" Command="{Binding RestoreRecoveryCommand}"
+                Content="Restore" Margin="0,0,8,0"/>
+        <Button Grid.Column="2" Classes="ghost" Command="{Binding DismissRecoveryCommand}"
+                Content="Discard"/>
+      </Grid>
+    </Border>
+
+    <!-- ── HUD bar (running only) ── -->
+    <Border Grid.Row="2" Padding="32,18,32,14"
+            IsVisible="{Binding SessionState,
+              Converter={x:Static vm:SessionStateConverter.Instance},
+              ConverterParameter=Running}">
+      <Grid ColumnDefinitions="*,Auto,*">
+
+        <!-- Timer -->
+        <TextBlock Grid.Column="0"
+                   Text="{Binding TimeRemaining}"
+                   FontSize="28" FontWeight="Light" LetterSpacing="2"
+                   Foreground="#C0C0C8" VerticalAlignment="Center"/>
+
+        <!-- Word count (center) -->
+        <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="6" VerticalAlignment="Center">
+          <TextBlock Text="{Binding WordCount}" FontSize="16" Foreground="#5A5A70" FontWeight="Medium"/>
+          <TextBlock Text="words" FontSize="16" Foreground="#3A3A50"/>
+        </StackPanel>
+
+        <!-- Idle countdown (right) -->
+        <StackPanel Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Spacing="5">
+          <TextBlock FontSize="12" Foreground="#3A3A50" HorizontalAlignment="Right"
+                     Text="{Binding IdleSecondsLeft, StringFormat='idle: {0:F0}s'}"/>
+          <Border Width="120" Height="3" CornerRadius="2" Background="#1E1E28" HorizontalAlignment="Right">
+            <Border HorizontalAlignment="Left" Height="3" CornerRadius="2"
+                    Background="#7C6FFF"
+                    Width="{Binding IdleProgress,
+                      Converter={x:Static vm:ProgressToWidthConverter.Instance},
+                      ConverterParameter=120}"/>
+          </Border>
+        </StackPanel>
+
+      </Grid>
+    </Border>
+
+    <!-- ── HUD bar (completed — time stopped, word count still live) ── -->
+    <Border Grid.Row="2" Padding="32,18,32,14"
+            IsVisible="{Binding SessionState,
+              Converter={x:Static vm:SessionStateConverter.Instance},
+              ConverterParameter=Completed}">
+      <StackPanel Orientation="Horizontal" Spacing="12" VerticalAlignment="Center">
+        <TextBlock Text="00:00" FontSize="28" FontWeight="Light" LetterSpacing="2"
+                   Foreground="#3A5A3A"/>
+        <TextBlock Text="·" FontSize="20" Foreground="#2A2A38" VerticalAlignment="Center"/>
+        <TextBlock Text="{Binding WordCount}" FontSize="16" Foreground="#4A7A5A" FontWeight="Medium"
+                   VerticalAlignment="Center"/>
+        <TextBlock Text="words" FontSize="16" Foreground="#3A5A3A" VerticalAlignment="Center"/>
+      </StackPanel>
+    </Border>
+
+    <!-- ── Prompt ── -->
+    <Border Grid.Row="3" Padding="56,16,56,0"
+            IsVisible="{Binding Prompt, Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+            VerticalAlignment="Top">
+      <TextBlock Text="{Binding Prompt}" FontSize="14" FontStyle="Italic"
+                 Foreground="#3A3A55" TextWrapping="Wrap"
+                 HorizontalAlignment="Center" MaxWidth="700"/>
+    </Border>
+
+    <!-- ── Writing area ── -->
+    <TextBox Grid.Row="3"
+             x:Name="WritingArea"
+             Text="{Binding BodyText}"
+             AcceptsReturn="True"
+             TextWrapping="Wrap"
+             FontSize="{Binding SessionFontSize}"
+             Foreground="#F0EEE8"
+             Background="Transparent"
+             BorderThickness="0"
+             Padding="56,20,56,60"
+             VerticalAlignment="Stretch"
+             VerticalContentAlignment="Top"
+             ScrollViewer.VerticalScrollBarVisibility="Auto"
+             CaretBrush="#7C6FFF"
+             SelectionBrush="#3D3780"
+             IsReadOnly="{Binding SessionState,
+               Converter={x:Static vm:SessionStateNotRunningConverter.Instance}}"
+             PlaceholderText="Begin writing. Don't stop."/>
+
+    <!-- ── Footer hint (running) ── -->
+    <Border Grid.Row="4" Padding="56,8" Height="34"
+            IsVisible="{Binding SessionState,
+              Converter={x:Static vm:SessionStateConverter.Instance},
+              ConverterParameter=Running}">
+      <TextBlock Text="Keep writing. Don't stop."
+                 FontSize="12" Foreground="#2A2A38" HorizontalAlignment="Center"/>
+    </Border>
+
+    <!-- ── Failure overlay (full screen) ── -->
+    <Grid Grid.Row="0" Grid.RowSpan="5"
+          IsVisible="{Binding SessionState,
+            Converter={x:Static vm:SessionStateConverter.Instance},
+            ConverterParameter=Failed}"
+          Background="#EE080809">
+      <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center"
+                  Spacing="16" MaxWidth="480">
+        <TextBlock Text="✗" FontSize="64" Foreground="{StaticResource Brush.Danger}"
+                   HorizontalAlignment="Center"/>
+        <TextBlock Text="Session Failed" FontSize="28" FontWeight="Light"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   HorizontalAlignment="Center"/>
+        <TextBlock FontSize="16" Foreground="{StaticResource Brush.TextSecondary}"
+                   HorizontalAlignment="Center" TextAlignment="Center"
+                   Text="{Binding FailReason,
+                     Converter={x:Static vm:FailReasonMessageConverter.Instance}}"/>
+        <TextBlock Text="{Binding WordCount, StringFormat='You wrote {0} words.'}"
+                   FontSize="14" Foreground="{StaticResource Brush.TextMuted}"
+                   HorizontalAlignment="Center"/>
+        <StackPanel Orientation="Horizontal" Spacing="12" HorizontalAlignment="Center" Margin="0,8,0,0">
+          <Button Classes="primary" Command="{Binding TryAgainCommand}"
+                  Content="Try Again" Padding="24,12"/>
+          <Button Classes="ghost" Command="{Binding GoHomeCommand}"
+                  Content="Go Home" Padding="20,12"/>
+        </StackPanel>
+      </StackPanel>
+    </Grid>
+
+  </Grid>
+</UserControl>

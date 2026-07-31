@@ -1,0 +1,198 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Flowrite.ViewModels"
+             xmlns:models="clr-namespace:Flowrite.Models"
+             x:Class="Flowrite.Views.EssayDetailView"
+             x:DataType="vm:EssayDetailViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Top bar -->
+    <Border Grid.Row="0" Padding="40,36,40,20">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Button Grid.Column="0" Classes="ghost" Command="{Binding GoBackCommand}"
+                Content="← Essays" Padding="0,8"/>
+        <!-- Title area -->
+        <StackPanel Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+          <!-- View mode title -->
+          <TextBlock Text="{Binding Essay.Title}" FontSize="18" FontWeight="SemiBold"
+                     Foreground="{StaticResource Brush.TextPrimary}"
+                     TextTrimming="CharacterEllipsis" MaxWidth="500"
+                     IsVisible="{Binding IsEditingTitle,
+                       Converter={x:Static vm:InverseBoolConverter.Instance}}"/>
+          <!-- Edit mode -->
+          <StackPanel Orientation="Horizontal" Spacing="8"
+                      IsVisible="{Binding IsEditingTitle}">
+            <TextBox Text="{Binding EditableTitle}" MinWidth="300" MaxWidth="500"
+                     FontSize="16" FontWeight="Medium" Padding="10,6"/>
+            <Button Classes="primary" Command="{Binding CommitTitleCommand}"
+                    Content="Save" Padding="14,6" FontSize="13"/>
+            <Button Classes="ghost" Command="{Binding CancelEditTitleCommand}"
+                    Content="Cancel" Padding="12,6" FontSize="13"/>
+          </StackPanel>
+        </StackPanel>
+        <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8">
+          <Button Classes="ghost" Command="{Binding BeginEditTitleCommand}"
+                  Content="Rename"
+                  IsVisible="{Binding IsEditingTitle,
+                    Converter={x:Static vm:InverseBoolConverter.Instance}}"/>
+          <Button Classes="primary" Command="{Binding ContinueWritingCommand}"
+                  Content="Continue Writing" Padding="16,10" FontSize="14"/>
+        </StackPanel>
+      </Grid>
+    </Border>
+
+    <!-- Main body -->
+    <ScrollViewer Grid.Row="1" Padding="0,0,0,0">
+      <Grid ColumnDefinitions="*,280" Margin="40,0,40,40">
+
+        <!-- Essay content + meta -->
+        <StackPanel Grid.Column="0" Spacing="0" Margin="0,0,32,0">
+
+          <!-- Meta badges -->
+          <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,24">
+            <Border Background="{StaticResource Brush.SurfaceRaised}" CornerRadius="6" Padding="10,5">
+              <TextBlock Text="{Binding Essay.Date, StringFormat='{}{0:MMMM d, yyyy}'}"
+                         FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+            </Border>
+            <Border Background="{StaticResource Brush.SurfaceRaised}" CornerRadius="6" Padding="10,5">
+              <TextBlock Text="{Binding Essay.WordCount, StringFormat='{}{0} words'}"
+                         FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+            </Border>
+            <Border Background="{StaticResource Brush.SurfaceRaised}" CornerRadius="6" Padding="10,5">
+              <TextBlock FontSize="13" Foreground="{StaticResource Brush.TextMuted}"
+                         Text="{Binding Essay.DurationSeconds,
+                           StringFormat='{}{0:F0} min session',
+                           Converter={x:Static vm:SecondsToMinConverter.Instance}}"/>
+            </Border>
+          </StackPanel>
+
+          <!-- Prompt -->
+          <Border IsVisible="{Binding Essay.Prompt,
+                    Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+                  Background="{StaticResource Brush.SurfaceRaised}"
+                  CornerRadius="8" Padding="16,12" Margin="0,0,0,28"
+                  BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+            <StackPanel Spacing="4">
+              <TextBlock Text="PROMPT" FontSize="10" FontWeight="SemiBold" LetterSpacing="2"
+                         Foreground="{StaticResource Brush.TextMuted}"/>
+              <TextBlock Text="{Binding Essay.Prompt}" FontSize="14" FontStyle="Italic"
+                         Foreground="{StaticResource Brush.TextSecondary}" TextWrapping="Wrap"/>
+            </StackPanel>
+          </Border>
+
+          <!-- Body text (read-only) -->
+          <TextBox Text="{Binding Essay.Body}" IsReadOnly="True"
+                   AcceptsReturn="True" TextWrapping="Wrap"
+                   FontSize="17"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   Background="Transparent" BorderThickness="0"
+                   Padding="0" SelectionBrush="{StaticResource Brush.AccentDim}"/>
+
+          <!-- AI Summary -->
+          <Border IsVisible="{Binding Essay.AiSummary,
+                    Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+                  Background="{StaticResource Brush.SurfaceRaised}"
+                  CornerRadius="10" Padding="20,16" Margin="0,32,0,0"
+                  BorderBrush="{StaticResource Brush.AccentDim}" BorderThickness="1">
+            <StackPanel Spacing="8">
+              <TextBlock Text="AI SUMMARY" FontSize="10" FontWeight="SemiBold" LetterSpacing="2"
+                         Foreground="{StaticResource Brush.Accent}"/>
+              <TextBlock Text="{Binding Essay.AiSummary}" FontSize="14"
+                         Foreground="{StaticResource Brush.TextSecondary}"
+                         TextWrapping="Wrap"/>
+            </StackPanel>
+          </Border>
+
+        </StackPanel>
+
+        <!-- Side panel: threading + actions -->
+        <StackPanel Grid.Column="1" Spacing="16" Margin="0,0,0,0">
+
+          <!-- Actions -->
+          <StackPanel Spacing="6">
+            <TextBlock Text="ACTIONS" FontSize="10" FontWeight="SemiBold" LetterSpacing="2"
+                       Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,4"/>
+
+            <Button Classes="ghost" Command="{Binding ExportToMarkdownCommand}"
+                    Content="Export to Markdown"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"/>
+
+            <Button Classes="ghost" Command="{Binding GenerateSummaryCommand}"
+                    IsVisible="{Binding HasAi}"
+                    IsEnabled="{Binding IsGeneratingSummary,
+                      Converter={x:Static vm:InverseBoolConverter.Instance}}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left">
+              <Button.Content>
+                <StackPanel Orientation="Horizontal" Spacing="8">
+                  <TextBlock Text="{Binding IsGeneratingSummary,
+                               Converter={x:Static vm:BoolToStringConverter.Instance},
+                               ConverterParameter='Generating…|AI Summary'}"
+                             FontSize="14"/>
+                </StackPanel>
+              </Button.Content>
+            </Button>
+
+            <TextBlock Text="{Binding AiStatusMessage}" FontSize="12"
+                       Foreground="{StaticResource Brush.TextMuted}"
+                       TextWrapping="Wrap"
+                       IsVisible="{Binding AiStatusMessage,
+                         Converter={x:Static vm:StringNotEmptyConverter.Instance}}"/>
+          </StackPanel>
+
+          <!-- Thread: parent -->
+          <StackPanel IsVisible="{Binding HasParent}" Spacing="6">
+            <TextBlock Text="PREVIOUS" FontSize="10" FontWeight="SemiBold" LetterSpacing="2"
+                       Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,4"/>
+            <Button Classes="ghost" Command="{Binding OpenParentCommand}"
+                    HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                    Padding="12,10">
+              <StackPanel Spacing="2">
+                <TextBlock Text="{Binding ParentEssay.Title}" FontSize="13"
+                           Foreground="{StaticResource Brush.TextPrimary}"
+                           TextTrimming="CharacterEllipsis"/>
+                <TextBlock Text="{Binding ParentEssay.Date, StringFormat='{}{0:MMM d}'}"
+                           FontSize="11" Foreground="{StaticResource Brush.TextMuted}"/>
+              </StackPanel>
+            </Button>
+          </StackPanel>
+
+          <!-- Thread: children -->
+          <StackPanel IsVisible="{Binding HasChildren}" Spacing="6">
+            <TextBlock Text="CONTINUATIONS" FontSize="10" FontWeight="SemiBold" LetterSpacing="2"
+                       Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,4"/>
+            <ItemsControl ItemsSource="{Binding ChildEssays}">
+              <ItemsControl.ItemTemplate>
+                <DataTemplate DataType="models:Essay">
+                  <Button Classes="ghost"
+                          Command="{Binding $parent[UserControl].((vm:EssayDetailViewModel)DataContext).OpenChildCommand}"
+                          CommandParameter="{Binding}"
+                          HorizontalAlignment="Stretch" HorizontalContentAlignment="Left"
+                          Padding="12,10" Margin="0,0,0,4">
+                    <StackPanel Spacing="2">
+                      <TextBlock Text="{Binding Title}" FontSize="13"
+                                 Foreground="{StaticResource Brush.TextPrimary}"
+                                 TextTrimming="CharacterEllipsis"/>
+                      <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM d}'}"
+                                 FontSize="11" Foreground="{StaticResource Brush.TextMuted}"/>
+                    </StackPanel>
+                  </Button>
+                </DataTemplate>
+              </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </StackPanel>
+
+          <!-- Continue writing -->
+          <Border Height="1" Background="{StaticResource Brush.BorderSubtle}"/>
+          <Button Classes="primary" Command="{Binding ContinueWritingCommand}"
+                  Content="Continue this thread →"
+                  HorizontalAlignment="Stretch"
+                  HorizontalContentAlignment="Center"
+                  Padding="16,12" FontSize="14"/>
+
+        </StackPanel>
+      </Grid>
+    </ScrollViewer>
+
+  </Grid>
+</UserControl>

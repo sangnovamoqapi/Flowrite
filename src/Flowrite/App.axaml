@@ -1,0 +1,182 @@
+<Application xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Class="Flowrite.App"
+             RequestedThemeVariant="Dark">
+
+  <Application.Resources>
+    <ResourceDictionary>
+      <!-- ── Color Palette ── -->
+      <Color x:Key="Col.Background">#0D0D0F</Color>
+      <Color x:Key="Col.Surface">#141417</Color>
+      <Color x:Key="Col.SurfaceRaised">#1C1C21</Color>
+      <Color x:Key="Col.Border">#2A2A30</Color>
+      <Color x:Key="Col.BorderSubtle">#1E1E23</Color>
+      <Color x:Key="Col.Accent">#7C6FFF</Color>
+      <Color x:Key="Col.AccentHover">#9A90FF</Color>
+      <Color x:Key="Col.AccentDim">#3D3780</Color>
+      <Color x:Key="Col.TextPrimary">#E8E8EA</Color>
+      <Color x:Key="Col.TextSecondary">#8A8A95</Color>
+      <Color x:Key="Col.TextMuted">#5A5A65</Color>
+      <Color x:Key="Col.Danger">#FF5A5A</Color>
+      <Color x:Key="Col.Success">#5AFFB0</Color>
+      <Color x:Key="Col.Warning">#FFB347</Color>
+
+      <!-- ── Brushes ── -->
+      <SolidColorBrush x:Key="Brush.Background"    Color="{StaticResource Col.Background}"/>
+      <SolidColorBrush x:Key="Brush.Surface"       Color="{StaticResource Col.Surface}"/>
+      <SolidColorBrush x:Key="Brush.SurfaceRaised" Color="{StaticResource Col.SurfaceRaised}"/>
+      <SolidColorBrush x:Key="Brush.Border"        Color="{StaticResource Col.Border}"/>
+      <SolidColorBrush x:Key="Brush.BorderSubtle"  Color="{StaticResource Col.BorderSubtle}"/>
+      <SolidColorBrush x:Key="Brush.Accent"        Color="{StaticResource Col.Accent}"/>
+      <SolidColorBrush x:Key="Brush.AccentHover"   Color="{StaticResource Col.AccentHover}"/>
+      <SolidColorBrush x:Key="Brush.AccentDim"     Color="{StaticResource Col.AccentDim}"/>
+      <SolidColorBrush x:Key="Brush.TextPrimary"   Color="{StaticResource Col.TextPrimary}"/>
+      <SolidColorBrush x:Key="Brush.TextSecondary" Color="{StaticResource Col.TextSecondary}"/>
+      <SolidColorBrush x:Key="Brush.TextMuted"     Color="{StaticResource Col.TextMuted}"/>
+      <SolidColorBrush x:Key="Brush.Danger"        Color="{StaticResource Col.Danger}"/>
+      <SolidColorBrush x:Key="Brush.Success"       Color="{StaticResource Col.Success}"/>
+      <SolidColorBrush x:Key="Brush.Warning"       Color="{StaticResource Col.Warning}"/>
+
+      <!-- ── Typography ── -->
+      <FontFamily x:Key="Font.UI">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+      <FontFamily x:Key="Font.Writing">avares://Avalonia.Fonts.Inter/Assets#Inter</FontFamily>
+
+      <!-- ── Spacing ── -->
+      <Thickness x:Key="Pad.Section">0,0,0,32</Thickness>
+      <Thickness x:Key="Pad.Card">20</Thickness>
+    </ResourceDictionary>
+  </Application.Resources>
+
+  <Application.Styles>
+    <FluentTheme />
+
+    <!-- ── Global Overrides ── -->
+    <Style Selector="Window">
+      <Setter Property="Background" Value="{StaticResource Brush.Background}"/>
+    </Style>
+
+    <Style Selector="TextBlock">
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+    </Style>
+
+    <Style Selector="TextBox">
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+      <Setter Property="Background" Value="{StaticResource Brush.Surface}"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="Padding" Value="12,10"/>
+      <Setter Property="CaretBrush" Value="{StaticResource Brush.Accent}"/>
+      <Setter Property="SelectionBrush" Value="{StaticResource Brush.AccentDim}"/>
+    </Style>
+
+    <Style Selector="TextBox:focus">
+      <Setter Property="BorderBrush" Value="{StaticResource Brush.Accent}"/>
+    </Style>
+
+    <!-- Primary Button -->
+    <Style Selector="Button.primary">
+      <Setter Property="Background" Value="{StaticResource Brush.Accent}"/>
+      <Setter Property="Foreground" Value="White"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Padding" Value="24,12"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="Button.primary:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource Brush.AccentHover}"/>
+    </Style>
+
+    <!-- Ghost Button -->
+    <Style Selector="Button.ghost">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Padding" Value="16,10"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <Style Selector="Button.ghost:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource Brush.SurfaceRaised}"/>
+      <Setter Property="TextElement.Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+    </Style>
+
+    <!-- Preset Selector Button -->
+    <Style Selector="Button.preset">
+      <Setter Property="Background" Value="{StaticResource Brush.SurfaceRaised}"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="Padding" Value="18,10"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Brush.Border}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="MinWidth" Value="80"/>
+    </Style>
+
+    <Style Selector="Button.preset:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource Brush.AccentDim}"/>
+      <Setter Property="TextElement.Foreground" Value="{StaticResource Brush.AccentHover}"/>
+    </Style>
+
+    <Style Selector="Button.preset-active">
+      <Setter Property="Background" Value="{StaticResource Brush.AccentDim}"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.AccentHover}"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontSize" Value="14"/>
+      <Setter Property="FontWeight" Value="SemiBold"/>
+      <Setter Property="Padding" Value="18,10"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="BorderBrush" Value="{StaticResource Brush.Accent}"/>
+      <Setter Property="BorderThickness" Value="1"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="MinWidth" Value="80"/>
+    </Style>
+
+    <!-- Danger Button -->
+    <Style Selector="Button.danger">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.Danger}"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontSize" Value="13"/>
+      <Setter Property="Padding" Value="14,8"/>
+      <Setter Property="CornerRadius" Value="8"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+    </Style>
+
+    <!-- Nav Item -->
+    <Style Selector="Button.nav">
+      <Setter Property="Background" Value="Transparent"/>
+      <Setter Property="Foreground" Value="{StaticResource Brush.TextSecondary}"/>
+      <Setter Property="FontFamily" Value="{StaticResource Font.UI}"/>
+      <Setter Property="FontSize" Value="15"/>
+      <Setter Property="Padding" Value="16,14"/>
+      <Setter Property="CornerRadius" Value="10"/>
+      <Setter Property="BorderThickness" Value="0"/>
+      <Setter Property="Cursor" Value="Hand"/>
+      <Setter Property="HorizontalContentAlignment" Value="Left"/>
+      <Setter Property="HorizontalAlignment" Value="Stretch"/>
+    </Style>
+
+    <Style Selector="Button.nav:pointerover /template/ ContentPresenter">
+      <Setter Property="Background" Value="{StaticResource Brush.SurfaceRaised}"/>
+      <Setter Property="TextElement.Foreground" Value="{StaticResource Brush.TextPrimary}"/>
+    </Style>
+
+    <!-- ScrollBar slim styling -->
+    <Style Selector="ScrollBar">
+      <Setter Property="Background" Value="Transparent"/>
+    </Style>
+  </Application.Styles>
+</Application>

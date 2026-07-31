@@ -1,0 +1,97 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Flowrite.ViewModels"
+             xmlns:models="clr-namespace:Flowrite.Models"
+             x:Class="Flowrite.Views.EssayLibraryView"
+             x:DataType="vm:EssayLibraryViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+
+    <!-- Top bar -->
+    <Border Grid.Row="0" Padding="40,36,40,24">
+      <Grid ColumnDefinitions="Auto,*,Auto">
+        <Button Grid.Column="0" Classes="ghost" Command="{Binding GoBackCommand}"
+                Content="← Back" Padding="0,8"/>
+        <TextBlock Grid.Column="1" Text="Essays" FontSize="20" FontWeight="SemiBold"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        <Button Grid.Column="2" Classes="primary" Command="{Binding NewSessionCommand}"
+                Content="+ New Session" Padding="18,10" FontSize="14"/>
+      </Grid>
+    </Border>
+
+    <!-- Search bar -->
+    <Border Grid.Row="1" Padding="40,0,40,20">
+      <TextBox Text="{Binding SearchQuery}"
+               PlaceholderText="Search essays…"
+               FontSize="15"
+               Padding="16,12"/>
+    </Border>
+
+    <!-- Essay list -->
+    <ScrollViewer Grid.Row="2" Padding="40,0,40,40">
+      <ItemsControl ItemsSource="{Binding Items}">
+        <ItemsControl.ItemTemplate>
+          <DataTemplate DataType="models:Essay">
+            <Border Margin="0,0,0,10"
+                    Background="{StaticResource Brush.Surface}"
+                    BorderBrush="{StaticResource Brush.Border}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    Padding="24,18"
+                    Cursor="Hand">
+              <Border.Styles>
+                <Style Selector="Border:pointerover">
+                  <Setter Property="Background" Value="{StaticResource Brush.SurfaceRaised}"/>
+                </Style>
+              </Border.Styles>
+              <Grid ColumnDefinitions="*,Auto" RowDefinitions="Auto,Auto">
+
+                <!-- Title (clickable) -->
+                <Button Grid.Row="0" Grid.Column="0"
+                        Background="Transparent" BorderThickness="0" Padding="0"
+                        HorizontalContentAlignment="Left"
+                        Command="{Binding $parent[UserControl].((vm:EssayLibraryViewModel)DataContext).OpenEssayCommand}"
+                        CommandParameter="{Binding}"
+                        Cursor="Hand">
+                  <TextBlock Text="{Binding Title}" FontSize="17" FontWeight="Medium"
+                             Foreground="{StaticResource Brush.TextPrimary}"
+                             TextTrimming="CharacterEllipsis"/>
+                </Button>
+
+                <!-- Metadata row -->
+                <StackPanel Grid.Row="1" Grid.Column="0" Orientation="Horizontal"
+                            Spacing="10" Margin="0,6,0,0">
+                  <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM d, yyyy}'}"
+                             FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+                  <TextBlock Text="·" FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+                  <TextBlock Text="{Binding WordCount, StringFormat='{}{0} words'}"
+                             FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+                  <TextBlock Text="·" FontSize="13" Foreground="{StaticResource Brush.TextMuted}"/>
+                  <TextBlock FontSize="13" Foreground="{StaticResource Brush.TextMuted}"
+                             Text="{Binding ReadingTimeMinutes, StringFormat='{}{0:F0} min read'}"/>
+                </StackPanel>
+
+                <!-- Action buttons -->
+                <StackPanel Grid.Row="0" Grid.RowSpan="2" Grid.Column="1"
+                            Orientation="Horizontal" Spacing="4" VerticalAlignment="Center">
+                  <Button Classes="ghost" FontSize="13" Padding="10,8"
+                          Command="{Binding $parent[UserControl].((vm:EssayLibraryViewModel)DataContext).ExportEssayCommand}"
+                          CommandParameter="{Binding}" Content="Export"/>
+                  <Button Classes="ghost" FontSize="13" Padding="10,8"
+                          Command="{Binding $parent[UserControl].((vm:EssayLibraryViewModel)DataContext).DuplicateEssayCommand}"
+                          CommandParameter="{Binding}" Content="Duplicate"/>
+                  <Button Classes="danger" FontSize="13" Padding="10,8"
+                          Command="{Binding $parent[UserControl].((vm:EssayLibraryViewModel)DataContext).DeleteEssayCommand}"
+                          CommandParameter="{Binding}" Content="Delete"/>
+                </StackPanel>
+
+              </Grid>
+            </Border>
+          </DataTemplate>
+        </ItemsControl.ItemTemplate>
+      </ItemsControl>
+    </ScrollViewer>
+
+  </Grid>
+</UserControl>

@@ -1,0 +1,28 @@
+## Dotnet / Build outputs
+bin/
+obj/
+*.user
+*.suo
+.vs/
+
+## Logs & databases (user data, don't commit)
+*.log
+*.db
+*.db-shm
+*.db-wal
+recovery.txt
+
+## OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+## Rider / JetBrains
+.idea/
+
+## VS Code
+.code-workspace
+.vscode/
+
+## Avalonia designer cache
+**/*.g.cs
