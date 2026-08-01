@@ -23,12 +23,13 @@ public enum FailReason
 /// Core writing session state machine.
 ///
 /// Lifecycle:
-///   Idle → Running → Completed (timer zero, auto-saved)
+///   Idle → Running → Completed (word goal met OR timer reached zero)
 ///                  → Failed    (idle timeout or paste abuse)
 ///
-/// After Completed the editor remains fully writable.
-/// The essay is saved once on transition to Completed, then updated
-/// on every subsequent keystroke via UpdateSavedEssay().
+/// Completion fires as soon as the word goal is reached — the timer
+/// is stopped at that point.  After Completed the editor stays open
+/// for free writing; the essay is saved immediately and updated on
+/// every subsequent keystroke.
 /// </summary>
 public sealed class WritingSessionService : IDisposable
 {
@@ -121,7 +122,25 @@ public sealed class WritingSessionService : IDisposable
         _wordCount = newWordCount;
         _currentText = newText;
         TryWriteRecovery(newText);
+
+        // ── Word-goal completion ───────────────────────────────────────────────
+        // Fires as soon as the goal is hit while the session is still running.
+        // The timer is cancelled; we don't wait for it to expire.
+        if (State == SessionState.Running && _wordCount >= _config.MinWordCount)
+            Complete();
+
         return true;
+    }
+
+    /// <summary>
+    /// Pre-seeds the session's word count without triggering any checks.
+    /// Call this before setting BodyText to a restored value so the
+    /// paste-abuse detector doesn't see a giant jump from 0.
+    /// </summary>
+    public void SetInitialText(string text)
+    {
+        _currentText = text;
+        _wordCount = CountWords(text);
     }
 
     private void OnTick(object? sender, System.Timers.ElapsedEventArgs e)
@@ -143,13 +162,19 @@ public sealed class WritingSessionService : IDisposable
     private void OnSessionExpired(object? sender, System.Timers.ElapsedEventArgs e)
     {
         if (State != SessionState.Running) return;
+        Complete();
+    }
 
-        // Stop the main timer but keep the tick timer running
-        // so the UI can still call Tick for post-session UI updates if needed
+    /// <summary>Shared completion path — called from timer expiry or word-goal hit.</summary>
+    private void Complete()
+    {
         _sessionTimer?.Stop();
+        // Keep _tickTimer alive briefly so IdleSecondsElapsed reads correctly;
+        // the ViewModel disposes the service when navigating away.
+        _tickTimer?.Stop();
 
         State = SessionState.Completed;
-        Log.Information("Session completed — {Words} words written (goal was {Goal})",
+        Log.Information("Session completed — {Words} words (goal={Goal})",
             _wordCount, _config.MinWordCount);
 
         DeleteRecovery();

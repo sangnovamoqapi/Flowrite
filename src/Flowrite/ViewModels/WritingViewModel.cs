@@ -180,8 +180,15 @@ public partial class WritingViewModel : ObservableObject, IDisposable
     [RelayCommand]
     private void RestoreRecovery()
     {
+        // Pre-seed the session's internal word count BEFORE touching BodyText.
+        // If we don't do this, the TextChanged handler sees a jump from 0 words
+        // to N words and the paste-abuse check fails the session immediately.
+        _session.SetInitialText(RecoveryText);
         BodyText = RecoveryText;
+        WordCount = _session.WordCount;
         ShowRecoveryBanner = false;
+        // Recovery is now live in the editor — the file is no longer needed.
+        _session.DeleteRecoveryFile();
     }
 
     [RelayCommand]
