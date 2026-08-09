@@ -1,0 +1,89 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Flowrite.ViewModels"
+             xmlns:models="clr-namespace:Flowrite.Models"
+             x:Class="Flowrite.Views.SearchView"
+             x:DataType="vm:SearchViewModel">
+
+  <Grid RowDefinitions="Auto,Auto,*">
+
+    <!-- Top bar -->
+    <Border Grid.Row="0" Padding="40,36,40,24">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0" Classes="ghost" Command="{Binding GoBackCommand}"
+                Content="← Back" Padding="0,8"/>
+        <TextBlock Grid.Column="1" Text="Search" FontSize="20" FontWeight="SemiBold"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      </Grid>
+    </Border>
+
+    <!-- Search input -->
+    <Border Grid.Row="1" Padding="80,0,80,20" MaxWidth="760">
+      <TextBox Text="{Binding Query}"
+               PlaceholderText="Search across all essays…"
+               FontSize="18"
+               Padding="20,16"/>
+    </Border>
+
+    <!-- Results -->
+    <ScrollViewer Grid.Row="2" Padding="80,0,80,40">
+      <StackPanel Spacing="0">
+
+        <!-- No results state -->
+        <StackPanel IsVisible="{Binding HasSearched}"
+                    HorizontalAlignment="Center" VerticalAlignment="Center"
+                    Spacing="8" Margin="0,60,0,0">
+          <TextBlock IsVisible="{Binding HasResults,
+                       Converter={x:Static vm:InverseBoolConverter.Instance}}"
+                     Text="No essays found." FontSize="16"
+                     Foreground="{StaticResource Brush.TextMuted}"
+                     HorizontalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Results list -->
+        <ItemsControl ItemsSource="{Binding Results}">
+          <ItemsControl.ItemTemplate>
+            <DataTemplate DataType="models:Essay">
+              <Button
+                Command="{Binding $parent[UserControl].((vm:SearchViewModel)DataContext).OpenEssayCommand}"
+                CommandParameter="{Binding}"
+                HorizontalAlignment="Stretch" HorizontalContentAlignment="Stretch"
+                Background="Transparent" BorderThickness="0"
+                Padding="0" Margin="0,0,0,2" Cursor="Hand">
+                <Border Background="{StaticResource Brush.Surface}"
+                        BorderBrush="{StaticResource Brush.Border}"
+                        BorderThickness="1" CornerRadius="10"
+                        Padding="20,16">
+                  <Border.Styles>
+                    <Style Selector="Border:pointerover">
+                      <Setter Property="Background" Value="{StaticResource Brush.SurfaceRaised}"/>
+                    </Style>
+                  </Border.Styles>
+                  <Grid RowDefinitions="Auto,Auto,Auto">
+                    <TextBlock Grid.Row="0" Text="{Binding Title}" FontSize="16" FontWeight="Medium"
+                               Foreground="{StaticResource Brush.TextPrimary}"/>
+                    <StackPanel Grid.Row="1" Orientation="Horizontal" Spacing="10" Margin="0,4,0,8">
+                      <TextBlock Text="{Binding Date, StringFormat='{}{0:MMM d, yyyy}'}"
+                                 FontSize="12" Foreground="{StaticResource Brush.TextMuted}"/>
+                      <TextBlock Text="·" FontSize="12" Foreground="{StaticResource Brush.TextMuted}"/>
+                      <TextBlock Text="{Binding WordCount, StringFormat='{}{0} words'}"
+                                 FontSize="12" Foreground="{StaticResource Brush.TextMuted}"/>
+                    </StackPanel>
+                    <TextBlock Grid.Row="2" FontSize="14"
+                               Foreground="{StaticResource Brush.TextSecondary}"
+                               TextTrimming="CharacterEllipsis"
+                               TextWrapping="Wrap"
+                               Text="{Binding Body}"/>
+                  </Grid>
+                </Border>
+              </Button>
+            </DataTemplate>
+          </ItemsControl.ItemTemplate>
+        </ItemsControl>
+
+      </StackPanel>
+    </ScrollViewer>
+
+  </Grid>
+</UserControl>

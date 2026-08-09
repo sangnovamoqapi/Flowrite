@@ -1,0 +1,40 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:Flowrite.ViewModels"
+        xmlns:v="clr-namespace:Flowrite.Views"
+        x:Class="Flowrite.Views.MainWindow"
+        x:DataType="vm:MainViewModel"
+        Title="Flowrite"
+        Width="1100" Height="720"
+        MinWidth="800" MinHeight="550"
+        Background="{StaticResource Brush.Background}"
+        ExtendClientAreaToDecorationsHint="True"
+        TransparencyLevelHint="AcrylicBlur">
+
+  <Window.DataTemplates>
+    <DataTemplate DataType="vm:HomeViewModel">
+      <v:HomeView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:NewSessionViewModel">
+      <v:NewSessionView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:WritingViewModel">
+      <v:WritingView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:EssayLibraryViewModel">
+      <v:EssayLibraryView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:EssayDetailViewModel">
+      <v:EssayDetailView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SearchViewModel">
+      <v:SearchView />
+    </DataTemplate>
+    <DataTemplate DataType="vm:SettingsViewModel">
+      <v:SettingsView />
+    </DataTemplate>
+  </Window.DataTemplates>
+
+  <ContentControl Content="{Binding CurrentPage}" />
+
+</Window>

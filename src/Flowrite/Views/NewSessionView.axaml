@@ -1,0 +1,144 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:Flowrite.ViewModels"
+             x:Class="Flowrite.Views.NewSessionView"
+             x:DataType="vm:NewSessionViewModel">
+
+  <Grid RowDefinitions="Auto,*,Auto">
+
+    <!-- Top bar -->
+    <Border Grid.Row="0" Padding="40,36,40,24">
+      <Grid ColumnDefinitions="Auto,*">
+        <Button Grid.Column="0" Classes="ghost" Command="{Binding GoBackCommand}"
+                Content="← Back" Padding="0,8"/>
+        <TextBlock Grid.Column="1" Text="New Session" FontSize="20" FontWeight="SemiBold"
+                   Foreground="{StaticResource Brush.TextPrimary}"
+                   HorizontalAlignment="Center" VerticalAlignment="Center"/>
+      </Grid>
+    </Border>
+
+    <ScrollViewer Grid.Row="1">
+      <StackPanel Margin="80,0,80,40" MaxWidth="600" HorizontalAlignment="Center">
+
+        <!-- ── Duration ── -->
+        <TextBlock Text="DURATION" FontSize="11" FontWeight="SemiBold" LetterSpacing="3"
+                   Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,14"/>
+
+        <!-- Preset row -->
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,14">
+          <Button Classes="preset" Command="{Binding Set5MinCommand}"  Content="5 min"/>
+          <Button Classes="preset" Command="{Binding Set10MinCommand}" Content="10 min"/>
+          <Button Classes="preset" Command="{Binding Set20MinCommand}" Content="20 min"/>
+          <Button Classes="preset" Command="{Binding SetCustomDurationCmdCommand}" Content="Custom"/>
+        </StackPanel>
+
+        <!-- Always-visible numeric input + live label -->
+        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+          <TextBlock Grid.Column="0" Text="{Binding DurationLabel}"
+                     FontSize="15" Foreground="{StaticResource Brush.Accent}"
+                     VerticalAlignment="Center"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
+                      IsVisible="{Binding IsCustomDuration}">
+            <NumericUpDown Value="{Binding DurationMinutes}"
+                           Minimum="1" Maximum="120" Increment="5"
+                           FormatString="0" Width="130"
+                           Foreground="{StaticResource Brush.TextPrimary}"
+                           Background="{StaticResource Brush.Surface}"/>
+            <TextBlock Text="min" FontSize="14" Foreground="{StaticResource Brush.TextSecondary}"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+        </Grid>
+
+        <Border Height="1" Background="{StaticResource Brush.BorderSubtle}" Margin="0,20,0,28"/>
+
+        <!-- ── Word Count ── -->
+        <TextBlock Text="MINIMUM WORD COUNT" FontSize="11" FontWeight="SemiBold" LetterSpacing="3"
+                   Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,14"/>
+
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,14">
+          <Button Classes="preset" Command="{Binding Set300WordsCommand}" Content="300"/>
+          <Button Classes="preset" Command="{Binding Set500WordsCommand}" Content="500"/>
+          <Button Classes="preset" Command="{Binding Set800WordsCommand}" Content="800"/>
+          <Button Classes="preset" Command="{Binding SetCustomWordCountCmdCommand}" Content="Custom"/>
+        </StackPanel>
+
+        <Grid ColumnDefinitions="*,Auto" Margin="0,0,0,8">
+          <TextBlock Grid.Column="0"
+                     Text="{Binding MinWordCount, StringFormat='Goal: {0:0} words'}"
+                     FontSize="15" Foreground="{StaticResource Brush.Accent}"
+                     VerticalAlignment="Center"/>
+          <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="10"
+                      IsVisible="{Binding IsCustomWordCount}">
+            <NumericUpDown Value="{Binding MinWordCount}"
+                           Minimum="10" Maximum="5000" Increment="50"
+                           FormatString="0" Width="130"
+                           Foreground="{StaticResource Brush.TextPrimary}"
+                           Background="{StaticResource Brush.Surface}"/>
+            <TextBlock Text="words" FontSize="14" Foreground="{StaticResource Brush.TextSecondary}"
+                       VerticalAlignment="Center"/>
+          </StackPanel>
+        </Grid>
+
+        <Border Height="1" Background="{StaticResource Brush.BorderSubtle}" Margin="0,20,0,28"/>
+
+        <!-- ── Idle Timeout ── -->
+        <TextBlock Text="IDLE TIMEOUT" FontSize="11" FontWeight="SemiBold" LetterSpacing="3"
+                   Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,10"/>
+        <TextBlock FontSize="13" Foreground="{StaticResource Brush.TextSecondary}"
+                   TextWrapping="Wrap" Margin="0,0,0,14"
+                   Text="Stop typing for this long → session fails instantly."/>
+        <StackPanel Orientation="Horizontal" Spacing="12" Margin="0,0,0,8">
+          <NumericUpDown Value="{Binding IdleTimeoutSeconds}"
+                         Minimum="3" Maximum="60" Increment="1"
+                         FormatString="0" Width="130"
+                         Foreground="{StaticResource Brush.TextPrimary}"
+                         Background="{StaticResource Brush.Surface}"/>
+          <TextBlock Text="seconds" FontSize="14" Foreground="{StaticResource Brush.TextSecondary}"
+                     VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <Border Height="1" Background="{StaticResource Brush.BorderSubtle}" Margin="0,20,0,28"/>
+
+        <!-- ── Writing Prompt ── -->
+        <TextBlock Text="WRITING PROMPT" FontSize="11" FontWeight="SemiBold" LetterSpacing="3"
+                   Foreground="{StaticResource Brush.TextMuted}" Margin="0,0,0,14"/>
+        <StackPanel Orientation="Horizontal" Spacing="8" Margin="0,0,0,14">
+          <Button Classes="preset" Command="{Binding SetNoPromptCommand}"     Content="None"/>
+          <Button Classes="preset" Command="{Binding SetRandomPromptCommand}" Content="Random"/>
+          <Button Classes="preset" Command="{Binding SetCustomPromptCommand}" Content="Custom"/>
+        </StackPanel>
+
+        <TextBox IsVisible="{Binding PromptMode,
+                   Converter={x:Static vm:EnumToBoolConverter.Instance},
+                   ConverterParameter=Custom}"
+                 Text="{Binding CustomPromptText}"
+                 PlaceholderText="Enter your writing prompt…"
+                 AcceptsReturn="False"
+                 Margin="0,0,0,12"/>
+
+        <Border IsVisible="{Binding ResolvedPrompt,
+                  Converter={x:Static vm:StringNotEmptyConverter.Instance}}"
+                Background="{StaticResource Brush.SurfaceRaised}"
+                CornerRadius="8" Padding="16,12"
+                BorderBrush="{StaticResource Brush.Border}" BorderThickness="1">
+          <TextBlock Text="{Binding ResolvedPrompt}" FontSize="14"
+                     Foreground="{StaticResource Brush.TextSecondary}"
+                     TextWrapping="Wrap" FontStyle="Italic"/>
+        </Border>
+
+      </StackPanel>
+    </ScrollViewer>
+
+    <!-- Start button -->
+    <Border Grid.Row="2"
+            Background="{StaticResource Brush.Background}"
+            BorderBrush="{StaticResource Brush.BorderSubtle}"
+            BorderThickness="0,1,0,0"
+            Padding="40,20">
+      <Button Classes="primary" Command="{Binding StartCommand}"
+              Content="Start Writing" FontSize="17"
+              Padding="40,16" HorizontalAlignment="Center"/>
+    </Border>
+
+  </Grid>
+</UserControl>
